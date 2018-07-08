@@ -1,12 +1,17 @@
 package com.wk.archdemoi
 
+import android.arch.core.util.Function
 import android.arch.lifecycle.*
+import android.arch.lifecycle.Observer
+import android.content.Intent
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.webkit.WebView
 import com.wk.archdemoi.beans.User
+import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -15,23 +20,57 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        btn_go_second.setOnClickListener {
+            startActivity(Intent(this, SecondActivity::class.java))
+        }
 //        val userViewModel = ViewModelProviders.of(this).get(User::class.java)
-        val lifecycleRegistry = LifecycleRegistry(this)
-        lifecycleRegistry.markState(Lifecycle.State.CREATED)
+//        val lifecycleRegistry = LifecycleRegistry(this)
+//        lifecycleRegistry.markState(Lifecycle.State.CREATED)
         val s = MutableLiveData<String>()
-        s.observe(this, object : Observer<String> {
-            override fun onChanged(t: String?) {
-                Log.d("way", "onCreate")
-            }
+
+        val mapLiveData = Transformations.map(s) { input -> "transform $input" }
+//        s.value = "kai"
+        s.value = null
+        mapLiveData.observe(this, Observer {
+            Log.d("way", "observeForever $it")
         })
+
+//        s.observe(this, object : Observer<String> {
+//            override fun onChanged(t: String?) {
+//                Log.d("way", "onCreate, $t")
+//
+//            }
+//        } )
+
+
+//        s.value = "wangkai"
+//        lifecycle.addObserver()
 
         Thread(Runnable {
             while (true) {
-                i ++
+                i++
                 s.postValue(i.toString())
-                Thread.sleep(500)
+//                Log.d("way", "Thread, $i")
+                Thread.sleep(1000)
             }
-        }).run()
+        }).start()
+
+
+//        Thread(object : Runnable {
+//            override fun run() {
+//
+//            }
+//        }).run()
+
+
+//        val timerTask = object : TimerTask() {
+//            override fun run() {
+//                s.postValue(i.toString())
+//                i ++
+//            }
+//        }
+//
+//        Timer().schedule(timerTask, 1000, 1000)
 
 
 //        lifecycle.addObserver(
